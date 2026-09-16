@@ -98,7 +98,7 @@ export function oneOf<T extends string>(
   return value as T;
 }
 
-export function strList(value: unknown, field: string, maxItems = LIMITS.listItems): string[] {
+export function strList(value: unknown, field: string, maxItems: number = LIMITS.listItems): string[] {
   if (value == null || value === '') return [];
   const arr = Array.isArray(value) ? value : typeof value === 'string' ? safeJsonArray(value) : null;
   if (!arr) fail(field, 'Formato no válido.');

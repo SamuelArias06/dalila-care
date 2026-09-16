@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist-types",
+    "rootDir": "./src",
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "types": ["vite/client"],
+    "paths": {
+      "@dalila/shared": ["../../packages/shared/src/index.ts"],
+      "react": ["../../node_modules/preact/compat"],
+      "react-dom": ["../../node_modules/preact/compat"]
+    }
+  },
+  "include": ["src/**/*"],
+  "references": [{ "path": "../../packages/shared" }]
+}

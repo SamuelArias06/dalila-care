@@ -100,7 +100,7 @@ async function refreshCounters(): Promise<void> {
 // ── Lectura de colecciones ───────────────────────────────────────────────────
 
 function listOf(collection: Collection): Record<string, unknown>[] {
-  if (collection === 'dog') return data.value.dog ? [data.value.dog as never] : [];
+  if (collection === 'dog') return data.value.dog ? [data.value.dog as unknown as Record<string, unknown>] : [];
   return (data.value as unknown as Record<string, Record<string, unknown>[]>)[collection] ?? [];
 }
 
@@ -279,9 +279,9 @@ function mergeInto(current: DalilaData, incoming: Partial<DalilaData>): DalilaDa
 
   for (const [key, rows] of Object.entries(incoming)) {
     if (key === 'dog' || !Array.isArray(rows)) continue;
-    const existing = [...(((current as unknown as Record<string, unknown>)[key] as Record<string, unknown>[]) ?? [])];
+    const existing = [...(((current as unknown as Record<string, unknown>)[key] as Record<string, unknown>[] | undefined) ?? [])];
     const byId = new Map(existing.map((r) => [r['id'] as string, r]));
-    for (const row of rows as Record<string, unknown>[]) {
+    for (const row of rows as unknown as Record<string, unknown>[]) {
       byId.set(row['id'] as string, row);
     }
     out[key] = [...byId.values()].filter((r) => !r['deletedAt']);

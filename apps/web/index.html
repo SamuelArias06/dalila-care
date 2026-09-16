@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dalila Care</title>
+    <meta name="description" content="Un lugar tranquilo para cuidar a Dalila todos los días." />
+
+    <!-- viewport-fit=cover es lo que permite usar las safe areas del notch y la
+         Dynamic Island. user-scalable no se bloquea: bloquearlo rompe el zoom
+         de accesibilidad. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <!-- El color de la barra de estado cambia con el tema para que no quede un
+         rectángulo blanco sobre el fondo oscuro. -->
+    <meta name="theme-color" content="#F6FBFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B1618" media="(prefers-color-scheme: dark)" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Dalila" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- iOS ignora los iconos del manifest para la pantalla de inicio: usa este. -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1179x2556.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1290x2796.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1170x2532.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1284x2778.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1125x2436.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-828x1792.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-750x1334.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-1536x2048.png">
+
+    <style>
+      /* Fondo inmediato para que no haya destello blanco antes de cargar el CSS. */
+      html { background: #F6FBFC; }
+      @media (prefers-color-scheme: dark) { html { background: #0B1618; } }
+      #app-loading {
+        position: fixed; inset: 0; display: grid; place-items: center;
+      }
+      #app-loading img { width: 64px; height: 64px; border-radius: 15px; }
+      .no-js { display: none; }
+    </style>
+    <script>
+      // El tema elegido se aplica antes de pintar nada, para evitar el parpadeo.
+      try {
+        var t = localStorage.getItem('dalila.theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="app-loading"><img src="icons/icon-128.png" alt="" /></div>
+    </div>
+    <noscript>
+      <p style="padding: 24px; font-family: system-ui">
+        Dalila Care necesita JavaScript para funcionar.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

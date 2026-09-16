@@ -304,7 +304,7 @@ const COLLECTIONS: Collection[] = [
 function pull(since: string): { data: DalilaData; syncedAt: string; full: boolean } {
   const data = emptyData();
   const dogRows = since ? readSince(SHEETS.dog, since) : readAll(SHEETS.dog);
-  data.dog = (dogRows[0] as DalilaData['dog']) ?? null;
+  data.dog = (dogRows[0] as unknown as DalilaData['dog']) ?? null;
 
   for (const c of COLLECTIONS) {
     const sheetName = COLLECTION_SHEET[c];

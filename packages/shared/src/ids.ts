@@ -35,8 +35,10 @@ export type EntityPrefix =
 
 function randomBytes(n: number): Uint8Array {
   const out = new Uint8Array(n);
-  const c: Crypto | undefined =
-    typeof globalThis !== 'undefined' ? (globalThis as { crypto?: Crypto }).crypto : undefined;
+  // Tipado estructural: este paquete compila sin la librería DOM, así que no
+  // podemos referirnos al tipo global Crypto.
+  type RandomSource = { getRandomValues(a: Uint8Array): Uint8Array };
+  const c = (globalThis as { crypto?: RandomSource }).crypto;
   if (c && typeof c.getRandomValues === 'function') {
     c.getRandomValues(out);
     return out;
