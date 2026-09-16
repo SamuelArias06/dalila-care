@@ -39,11 +39,13 @@ export function App() {
   }, []);
 
   if (!ready.value) return <Splash />;
-  if (!session.value) return <InviteScreen />;
 
+  // El código del enlace se lee ANTES de comprobar la sesión: si no, quien abre
+  // su enlace por primera vez ve la pantalla de acceso sin el código cargado.
   const r = route.value;
   const inviteParams = match('/invitacion/:code', r.path);
   if (inviteParams) return <InviteScreen code={inviteParams['code']} />;
+  if (!session.value) return <InviteScreen />;
 
   if (!isOnboarded.value) return <OnboardingScreen />;
 
