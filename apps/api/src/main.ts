@@ -338,6 +338,77 @@ function pull(since: string): { data: DalilaData; syncedAt: string; full: boolea
   return { data, syncedAt: nowIso(), full: !since };
 }
 
+/** Límite práctico por celda: Sheets rechaza celdas de más de 50 000 caracteres. */
+const MAX_INLINE_POSTER = 45_000;
+const TITLE_MAX = 120;
+
+/**
+ * Ajustes antes de validar, para no perder un registro entero por un detalle.
+ *
+ * La regla general es que un campo opcional mal formado se descarta o se
+ * reubica en lugar de rechazar la mutación completa: perder el perfil de Dalila
+ * porque alguien escribió "32 kg" en el peso sería inaceptable. Los campos
+ * esenciales (fechas, referencias, estados) siguen validándose con rigor.
+ */
+function normalizeForStorage(collection: Collection, entityId: string, input: Record<string, unknown>): Record<string, unknown> {
+  const p: Record<string, unknown> = { ...input };
+
+  if (collection === 'dog') {
+    const photo = p['photoMediaId'];
+    if (photo !== undefined && !/^mda_[0-9A-HJKMNP-TV-Z]{26}$/.test(String(photo ?? ''))) delete p['photoMediaId'];
+    for (const f of ['currentWeightKg', 'targetWeightKg']) {
+      if (p[f] === undefined || p[f] === null || p[f] === '') continue;
+      const n = parseFloat(String(p[f]).replace(',', '.'));
+      if (Number.isFinite(n) && n >= 0.3 && n <= 120) p[f] = n;
+      else delete p[f];
+    }
+  }
+
+  // Un título largo (p. ej. un diagnóstico copiado del informe) no se rechaza:
+  // se acorta y el texto completo pasa a las notas.
+  const titleField = { diagnoses: 'name', medications: 'name', foods: 'name', tasks: 'title' }[collection as string];
+  if (titleField && typeof p[titleField] === 'string' && (p[titleField] as string).trim().length > TITLE_MAX) {
+    const full = (p[titleField] as string).trim();
+    const notesField = 'notes';
+    const prev = typeof p[notesField] === 'string' && p[notesField] ? `${p[notesField] as string}\n\n` : '';
+    p[notesField] = (prev + full).slice(0, 4000);
+    p[titleField] = `${full.slice(0, TITLE_MAX - 1).trim()}…`;
+  }
+
+  // Una foto grande no cabe en una celda: se guarda como archivo en Drive y la
+  // ficha conserva sólo la referencia.
+  if (collection === 'media' && typeof p['posterDataUrl'] === 'string') {
+    const dataUrl = p['posterDataUrl'] as string;
+    if (dataUrl.length > MAX_INLINE_POSTER) {
+      const m = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(dataUrl);
+      const folderRoot = props().getProperty(PROP.mediaFolderId);
+      // Un reintento de la misma mutación no debe crear el archivo dos veces.
+      const already = findById(SHEETS.media, entityId);
+      if (already && already.row['driveFileId']) {
+        p['driveFileId'] = already.row['driveFileId'];
+      } else if (m && folderRoot) {
+        const localDate = String(p['localDate'] ?? localDateOf());
+        const bytes = Utilities.base64Decode(m[2]!);
+        const blob = Utilities.newBlob(bytes, m[1]!, `${entityId}.jpg`);
+        const folderId = drive.monthFolder(folderRoot, localDate);
+        const fileId = drive.uploadSmallFile(
+          `${localDate.replace(/-/g, '')}-foto-${entityId}.${m[1] === 'image/png' ? 'png' : 'jpg'}`,
+          m[1]!,
+          folderId,
+          blob,
+        );
+        p['driveFileId'] = fileId;
+        p['uploadState'] = 'subido';
+        p['mimeType'] = m[1];
+        p['sizeBytes'] = bytes.length;
+      }
+      delete p['posterDataUrl'];
+    }
+  }
+
+  return p;
+}
+
 function push(mutations: Mutation[], auth: AuthContext): {
   applied: string[];
   rejected: { mutationId: string; code: ApiErrorCode; userMessage: string; field?: string }[];
@@ -374,7 +445,7 @@ function push(mutations: Mutation[], auth: AuthContext): {
           continue;
         }
 
-        const clean = validatePatch(m.collection, m.patch ?? {}, today);
+        const clean = validatePatch(m.collection, normalizeForStorage(m.collection, id, m.patch ?? {}), today);
         const existing = findById(sheetName, id);
 
         const row: Record<string, unknown> = {
