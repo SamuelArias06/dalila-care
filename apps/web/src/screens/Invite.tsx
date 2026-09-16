@@ -18,6 +18,17 @@ export function InviteScreen({ code }: { code?: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [auto, setAuto] = useState(!!code);
+  // El backend puede tardar 15-20 s en "despertar" la primera vez; sin este
+  // aviso la pantalla parece colgada.
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    if (!busy) {
+      setSlow(false);
+      return;
+    }
+    const t = setTimeout(() => setSlow(true), 5000);
+    return () => clearTimeout(t);
+  }, [busy]);
 
   const redeem = async (raw: string) => {
     // Acepta tanto el código suelto como el enlace completo pegado.
@@ -79,7 +90,13 @@ export function InviteScreen({ code }: { code?: string }) {
 
         {auto && !error ? (
           <div class="glass pad stack" style="align-items:center">
+            <div class="skeleton" style="width:44px;height:6px;border-radius:999px" aria-hidden="true" />
             <p class="t-body t-soft">Validando tu enlace…</p>
+            {slow && (
+              <p class="t-sm t-mute fade-in">
+                La primera vez puede tardar unos segundos. No cierres esta pantalla.
+              </p>
+            )}
           </div>
         ) : (
           <div class="glass pad stack">
