@@ -1,0 +1,30 @@
+{
+  "name": "dalila-care",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b --force",
+    "build:api": "node scripts/build-api.mjs",
+    "build:web": "npm run build -w @dalila/web",
+    "dev": "npm run dev -w @dalila/web",
+    "push:api": "npm run build:api && cd apps/api && clasp push --force",
+    "deploy:api": "node scripts/deploy-api.mjs",
+    "build": "npm run build:api && npm run build:web"
+  },
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.100",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}

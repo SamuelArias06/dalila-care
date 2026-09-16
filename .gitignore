@@ -4,5 +4,8 @@ build/
 .clasp.json
 .env
 .env.local
-.DS_Store
 *.log
+.DS_Store
+apps/web/dev-dist/
+.secrets.json
+apps/api/appsscript.json

@@ -1,0 +1,229 @@
+/**
+ * Sistema de diseño de Dalila Care.
+ *
+ * Rosado, agua marina y verde suave sobre blanco, con superficies de cristal
+ * translúcido. La idea es que se sienta cercana al ecosistema de Apple sin
+ * copiarlo: profundidad por capas y desenfoque, no por sombras duras.
+ */
+
+:root {
+  /* ── Marca ──────────────────────────────────────────────────────────── */
+  --rosa-50:  #FFF1F6;
+  --rosa-100: #FFE0EC;
+  --rosa-200: #FFC2D8;
+  --rosa-300: #FF9DBF;
+  --rosa-400: #FF7BA8;
+  --rosa-500: #F4608F;
+  --rosa-600: #DB4576;
+  --rosa-700: #B32F5C;
+
+  --agua-50:  #EAFAF9;
+  --agua-100: #CFF4F1;
+  --agua-200: #9EE8E3;
+  --agua-300: #6BD8D2;
+  --agua-400: #3EC5BF;
+  --agua-500: #22ABA6;
+  --agua-600: #148C89;
+  --agua-700: #0C6B69;
+
+  --verde-100: #DFF5E6;
+  --verde-200: #B9E9C9;
+  --verde-300: #8CD9A8;
+  --verde-400: #5FC589;
+  --verde-500: #3DA86D;
+  --verde-600: #2C8555;
+
+  --ambar-100: #FFF0D4;
+  --ambar-400: #F0A93C;
+  --ambar-600: #C97F16;
+
+  --coral-100: #FFE6E1;
+  --coral-400: #F0705C;
+  --coral-500: #DB5440;
+  --coral-600: #B33D2C;
+
+  /* ── Superficies ────────────────────────────────────────────────────── */
+  --bg:            #F6FBFC;
+  --bg-tint-a:     rgba(255, 158, 191, 0.22);
+  --bg-tint-b:     rgba(107, 216, 210, 0.22);
+  --bg-tint-c:     rgba(140, 217, 168, 0.16);
+
+  --surface:       rgba(255, 255, 255, 0.72);
+  --surface-solid: #FFFFFF;
+  --surface-2:     rgba(255, 255, 255, 0.52);
+  --surface-sunken: rgba(240, 248, 250, 0.72);
+  --hairline:      rgba(255, 255, 255, 0.75);
+  --border:        rgba(14, 62, 68, 0.10);
+  --border-strong: rgba(14, 62, 68, 0.18);
+
+  /* ── Texto ──────────────────────────────────────────────────────────── */
+  --ink:      #16323A;
+  --ink-soft: #55707A;
+  --ink-mute: #7D949C;
+  --on-accent: #FFFFFF;
+
+  /* ── Acentos semánticos ─────────────────────────────────────────────── */
+  --accent:        var(--agua-500);
+  --accent-ink:    var(--agua-700);
+  --accent-soft:   var(--agua-50);
+  --brand:         var(--rosa-500);
+  --brand-soft:    var(--rosa-50);
+  --ok:            var(--verde-500);
+  --ok-soft:       var(--verde-100);
+  --warn:          var(--ambar-600);
+  --warn-soft:     var(--ambar-100);
+  --alert:         var(--coral-500);
+  --alert-soft:    var(--coral-100);
+
+  --gradient-brand: linear-gradient(135deg, var(--rosa-400) 0%, var(--agua-400) 100%);
+  --gradient-soft:  linear-gradient(135deg, var(--rosa-100) 0%, var(--agua-100) 100%);
+  --gradient-ok:    linear-gradient(135deg, var(--verde-300) 0%, var(--agua-300) 100%);
+
+  /* ── Sombras: muy suaves, teñidas de la marca ───────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(18, 70, 78, 0.05);
+  --shadow-sm: 0 2px 8px rgba(18, 70, 78, 0.06);
+  --shadow-md: 0 6px 20px rgba(18, 70, 78, 0.08), 0 1px 3px rgba(18, 70, 78, 0.04);
+  --shadow-lg: 0 16px 40px rgba(18, 70, 78, 0.12), 0 2px 8px rgba(18, 70, 78, 0.06);
+  --shadow-brand: 0 8px 24px rgba(244, 96, 143, 0.28);
+  --shadow-accent: 0 8px 24px rgba(34, 171, 166, 0.26);
+
+  /* ── Cristal ────────────────────────────────────────────────────────── */
+  --glass-blur: 22px;
+  --glass-saturate: 180%;
+
+  /* ── Forma ──────────────────────────────────────────────────────────── */
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 30px;
+  --r-full: 999px;
+
+  /* ── Espaciado (escala de 4) ────────────────────────────────────────── */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* ── Tipografía: la del sistema, para que cargue al instante y respete
+        el tamaño de texto que la usuaria tenga configurado ───────────── */
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text',
+          'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable Display',
+          'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --t-xs:   0.75rem;
+  --t-sm:   0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md:   1.0625rem;
+  --t-lg:   1.25rem;
+  --t-xl:   1.5rem;
+  --t-2xl:  1.875rem;
+  --t-3xl:  2.25rem;
+
+  /* ── Movimiento ─────────────────────────────────────────────────────── */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 340ms;
+
+  /* ── Capas ──────────────────────────────────────────────────────────── */
+  --z-nav: 100;
+  --z-sheet: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+
+  /* ── Áreas seguras del iPhone ───────────────────────────────────────── */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --tabbar-h: 62px;
+  --gutter: 18px;
+  --content-max: 560px;
+}
+
+/* ── Modo oscuro ──────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg:            #0B1618;
+    --bg-tint-a:     rgba(244, 96, 143, 0.16);
+    --bg-tint-b:     rgba(34, 171, 166, 0.18);
+    --bg-tint-c:     rgba(92, 197, 137, 0.10);
+
+    --surface:       rgba(255, 255, 255, 0.07);
+    --surface-solid: #16262A;
+    --surface-2:     rgba(255, 255, 255, 0.045);
+    --surface-sunken: rgba(0, 0, 0, 0.22);
+    --hairline:      rgba(255, 255, 255, 0.10);
+    --border:        rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.18);
+
+    --ink:      #EAF5F6;
+    --ink-soft: #A8C0C4;
+    --ink-mute: #7E979C;
+
+    --accent:      var(--agua-300);
+    --accent-ink:  var(--agua-200);
+    --accent-soft: rgba(62, 197, 191, 0.14);
+    --brand:       var(--rosa-300);
+    --brand-soft:  rgba(255, 157, 191, 0.14);
+    --ok:          var(--verde-300);
+    --ok-soft:     rgba(140, 217, 168, 0.14);
+    --warn:        var(--ambar-400);
+    --warn-soft:   rgba(240, 169, 60, 0.14);
+    --alert:       var(--coral-400);
+    --alert-soft:  rgba(240, 112, 92, 0.16);
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.42);
+    --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.5);
+    --shadow-brand: 0 8px 24px rgba(244, 96, 143, 0.3);
+    --shadow-accent: 0 8px 24px rgba(34, 171, 166, 0.3);
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg:            #0B1618;
+  --bg-tint-a:     rgba(244, 96, 143, 0.16);
+  --bg-tint-b:     rgba(34, 171, 166, 0.18);
+  --bg-tint-c:     rgba(92, 197, 137, 0.10);
+
+  --surface:       rgba(255, 255, 255, 0.07);
+  --surface-solid: #16262A;
+  --surface-2:     rgba(255, 255, 255, 0.045);
+  --surface-sunken: rgba(0, 0, 0, 0.22);
+  --hairline:      rgba(255, 255, 255, 0.10);
+  --border:        rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  --ink:      #EAF5F6;
+  --ink-soft: #A8C0C4;
+  --ink-mute: #7E979C;
+
+  --accent:      var(--agua-300);
+  --accent-ink:  var(--agua-200);
+  --accent-soft: rgba(62, 197, 191, 0.14);
+  --brand:       var(--rosa-300);
+  --brand-soft:  rgba(255, 157, 191, 0.14);
+  --ok:          var(--verde-300);
+  --ok-soft:     rgba(140, 217, 168, 0.14);
+  --warn:        var(--ambar-400);
+  --warn-soft:   rgba(240, 169, 60, 0.14);
+  --alert:       var(--coral-400);
+  --alert-soft:  rgba(240, 112, 92, 0.16);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.5);
+}
