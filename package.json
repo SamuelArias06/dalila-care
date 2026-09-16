@@ -18,8 +18,8 @@
     "build:web": "npm run build -w @dalila/web",
     "dev": "npm run dev -w @dalila/web",
     "push:api": "npm run build:api && cd apps/api && clasp push --force",
-    "deploy:api": "node scripts/deploy-api.mjs",
-    "build": "npm run build:api && npm run build:web"
+    "build": "npm run build:api && npm run build:web",
+    "setup": "node scripts/finish-setup.mjs"
   },
   "devDependencies": {
     "@types/google-apps-script": "^1.0.100",

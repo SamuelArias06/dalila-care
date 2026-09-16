@@ -103,8 +103,16 @@ function doGet(e: GoogleAppsScript.Events.DoGet): GoogleAppsScript.Content.TextO
     }
     try {
       const result = bootstrap();
-      const invite = params['invite'] === '1' ? createInvite('admin', 'arranque inicial') : null;
-      return ok({ ...result, version: BUILD_VERSION, inviteCode: invite?.code ?? null });
+      // Dos enlaces de un solo uso: uno para el administrador y otro para el
+      // iPhone de la cuidadora, para no tener que crear el segundo a mano.
+      const admin = params['invite'] === '1' ? createInvite('admin', 'arranque inicial') : null;
+      const caregiver = params['invite'] === '1' ? createInvite('caregiver', 'iPhone') : null;
+      return ok({
+        ...result,
+        version: BUILD_VERSION,
+        inviteCode: admin?.code ?? null,
+        caregiverCode: caregiver?.code ?? null,
+      });
     } catch (error) {
       const id = newErrorId();
       console.error(`[${id}] bootstrap`, String(error));
