@@ -88,6 +88,9 @@ interface InviteRecord {
   expiresAt: number;
   usedAt?: number;
   note?: string;
+  /** Identificador que envió el dispositivo al canjear: permite reintentar. */
+  usedNonce?: string;
+  deviceId?: string;
 }
 
 function readInvites(): Record<string, InviteRecord> {
@@ -129,7 +132,9 @@ export interface RedeemResult {
  * El código queda inutilizado inmediatamente: si alguien reenvía el enlace, ya
  * no sirve.
  */
-export function redeemInvite(code: string, deviceLabel: string): RedeemResult | null {
+const REDEEM_RETRY_WINDOW_MS = 30 * 60 * 1000;
+
+export function redeemInvite(code: string, deviceLabel: string, clientNonce = ''): RedeemResult | null {
   const lock = LockService.getScriptLock();
   lock.waitLock(15000);
   try {
@@ -137,17 +142,44 @@ export function redeemInvite(code: string, deviceLabel: string): RedeemResult | 
     const hash = sha256Hex(String(code ?? ''));
     const rec = map[hash];
     if (!rec) return null;
-    if (rec.usedAt) return null;
+
+    // Canje idempotente: si la respuesta se perdió por mala señal, el mismo
+    // dispositivo puede reintentar y recibe el mismo acceso. Sin esto, un enlace
+    // de un solo uso se "quemaría" con una conexión inestable.
+    const nonce = /^[A-Za-z0-9_-]{16,64}$/.test(clientNonce) ? clientNonce : '';
+    if (rec.usedAt) {
+      const sameDevice = !!nonce && rec.usedNonce === nonce && !!rec.deviceId;
+      if (sameDevice && Date.now() - rec.usedAt < REDEEM_RETRY_WINDOW_MS && readRevoked().indexOf(rec.deviceId!) === -1) {
+        return { token: mintToken(rec.deviceId!, rec.role), deviceId: rec.deviceId!, role: rec.role };
+      }
+      return null;
+    }
     if (rec.expiresAt < Date.now()) return null;
 
+    const deviceId = 'dev_' + randomToken(20);
     rec.usedAt = Date.now();
+    rec.usedNonce = nonce;
+    rec.deviceId = deviceId;
     writeInvites(map);
 
-    const deviceId = 'dev_' + randomToken(20);
     return { token: mintToken(deviceId, rec.role), deviceId, role: rec.role };
   } finally {
     lock.releaseLock();
   }
+}
+
+/** Anula todas las invitaciones que aún no se han usado. Devuelve cuántas. */
+export function revokeUnusedInvites(): number {
+  const map = readInvites();
+  let n = 0;
+  for (const k of Object.keys(map)) {
+    if (!map[k]!.usedAt) {
+      delete map[k];
+      n++;
+    }
+  }
+  props().setProperty(PROP.invites, JSON.stringify(map));
+  return n;
 }
 
 // ── Tokens de dispositivo ────────────────────────────────────────────────────

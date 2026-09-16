@@ -14,6 +14,7 @@ import { PhotoPicker } from '../components/PhotoPicker.js';
 import { call } from '../data/api.js';
 import * as db from '../data/db.js';
 import { processUploadQueue } from '../data/media.js';
+import { openTour } from '../components/Tour.js';
 
 // ── Hub ──────────────────────────────────────────────────────────────────────
 
@@ -363,6 +364,14 @@ export function SettingsScreen() {
   return (
     <div class="stack-lg">
       <Header title="Ajustes" back="/dalila" />
+
+      <Section title="Ayuda">
+        <Card pad={false}>
+          <div class="list">
+            <Row icon={<IconHeart size={19} />} title="Cómo usar Dalila Care" subtitle="Un recorrido de un minuto" chevron onClick={openTour} />
+          </div>
+        </Card>
+      </Section>
 
       <Section title="Apariencia">
         <Card pad={false}>

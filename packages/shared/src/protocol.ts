@@ -19,6 +19,7 @@ export const ACTIONS = [
   'auth.listDevices',
   'auth.revokeDevice',
   'auth.createInvite',
+  'auth.revokeInvites',
   'data.pull',
   'data.push',
   'media.createUploadSession',

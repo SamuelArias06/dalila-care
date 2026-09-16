@@ -51,6 +51,7 @@ async function main() {
 
   if (!body.ok) {
     console.error('Error del servidor:', body.error?.userMessage ?? JSON.stringify(body.error));
+    if (body.detail) console.error('\nDetalle técnico:\n', body.detail);
     process.exit(1);
   }
 

@@ -38,6 +38,7 @@ import {
   createInvite,
   redeemInvite,
   revokeDevice,
+  revokeUnusedInvites,
   verifyToken,
   type AuthContext,
 } from './auth.js';
@@ -105,8 +106,10 @@ function doGet(e: GoogleAppsScript.Events.DoGet): GoogleAppsScript.Content.TextO
       const result = bootstrap();
       // Dos enlaces de un solo uso: uno para el administrador y otro para el
       // iPhone de la cuidadora, para no tener que crear el segundo a mano.
-      const admin = params['invite'] === '1' ? createInvite('admin', 'arranque inicial') : null;
-      const caregiver = params['invite'] === '1' ? createInvite('caregiver', 'iPhone') : null;
+      // invite=1 → ambos enlaces; invite=admin → sólo el de administrador.
+      const wanted = String(params['invite'] ?? '');
+      const admin = wanted === '1' || wanted === 'admin' ? createInvite('admin', 'arranque inicial') : null;
+      const caregiver = wanted === '1' ? createInvite('caregiver', 'iPhone') : null;
       return ok({
         ...result,
         version: BUILD_VERSION,
@@ -116,7 +119,14 @@ function doGet(e: GoogleAppsScript.Events.DoGet): GoogleAppsScript.Content.TextO
     } catch (error) {
       const id = newErrorId();
       console.error(`[${id}] bootstrap`, String(error));
-      return err('INTERNAL', 'No se pudo completar la configuración inicial.', { errorId: id });
+      // Esta ruta sólo es accesible con la clave de arranque, así que exponer el
+      // detalle técnico aquí no filtra nada a terceros y ahorra horas de diagnóstico.
+      return json({
+        ok: false,
+        error: { code: 'INTERNAL', userMessage: 'No se pudo completar la configuración inicial.', errorId: id },
+        detail: String((error as Error)?.stack ?? error).slice(0, 1500),
+        serverTime: nowIso(),
+      });
     }
   }
 
@@ -135,6 +145,7 @@ const ADMIN_ACTIONS = [
   'auth.listDevices',
   'auth.revokeDevice',
   'auth.createInvite',
+  'auth.revokeInvites',
   'admin.diagnostics',
   'admin.backup',
 ];
@@ -211,7 +222,7 @@ function dispatch(action: string, payload: Record<string, unknown>, auth: AuthCo
       if (!isConfigured()) throw new Error('NOT_CONFIGURED');
       const code = String(payload['inviteCode'] ?? '');
       const label = String(payload['deviceLabel'] ?? 'Dispositivo').slice(0, 60);
-      const res = redeemInvite(code, label);
+      const res = redeemInvite(code, label, String(payload['clientNonce'] ?? ''));
       if (!res) {
         throw new ValidationError(
           'inviteCode',
@@ -252,6 +263,9 @@ function dispatch(action: string, payload: Record<string, unknown>, auth: AuthCo
       softDelete(SHEETS.devices, deviceId, nowIso());
       return { revoked: deviceId };
     }
+
+    case 'auth.revokeInvites':
+      return { revoked: revokeUnusedInvites() };
 
     case 'auth.createInvite': {
       const role = payload['role'] === 'admin' ? 'admin' : 'caregiver';
@@ -472,7 +486,12 @@ function confirmUpload(payload: Record<string, unknown>): unknown {
     throw new ValidationError('driveFileId', 'No encontramos el archivo subido. Lo intentaremos de nuevo.');
   }
 
+  // Si la ficha todavía no llegó desde la cola del cliente, se crea con los
+  // campos base para que nunca exista una fila sin identidad ni versión.
+  const existingMedia = findById(SHEETS.media, mediaId);
+  const now = nowIso();
   upsert(SHEETS.media, mediaId, {
+    ...(existingMedia ? {} : { id: mediaId, schemaVersion: SCHEMA_VERSION, createdAt: now, mimeType: meta.mimeType ?? '' }),
     driveFileId,
     uploadState: 'subido',
     uploadError: '',

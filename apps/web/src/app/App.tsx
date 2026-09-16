@@ -5,6 +5,7 @@ import { boot, installSyncTriggers, isOnboarded, ready, session } from '../data/
 import { TabBar } from './TabBar.js';
 import { SyncBar } from './SyncBar.js';
 import { InstallHint } from './InstallHint.js';
+import { Tour } from '../components/Tour.js';
 import { Toaster } from '../ui/Kit.js';
 import { Logo } from '../ui/Icons.js';
 
@@ -57,6 +58,7 @@ export function App() {
       {!isFullscreen && <TabBar onQuickAdd={() => setQuickAdd(true)} />}
       <QuickAdd open={quickAdd} onClose={() => setQuickAdd(false)} />
       <InstallHint />
+      <Tour />
       <Toaster />
     </>
   );

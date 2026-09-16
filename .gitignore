@@ -13,3 +13,4 @@ dist-types/
 *.tsbuildinfo
 apps/web/vite.config.d.ts
 apps/web/vite.config.js
+*.local.txt
